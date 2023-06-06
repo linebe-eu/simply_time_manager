@@ -10,7 +10,7 @@ class Subject(models.Model):
     title = models.CharField(max_length=64, unique=True)
 
     def __str__(self):
-        return f"{self.title} (id={self.id})"
+        return f"{self.title} (id={self.pk})"
 
 
 class TaskState(models.TextChoices):
