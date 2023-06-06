@@ -3,7 +3,7 @@ import logging
 from django.conf import settings
 from .common import Singleton
 from .exceptions import *
-from task.models import TaskState, Task, Schedule
+from tasks.models import TaskState, Task, Schedule
 from ..serializers import TaskSerializer
 from .schedule_service import ScheduleService
 

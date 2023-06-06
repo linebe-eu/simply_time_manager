@@ -3,13 +3,13 @@ import pytest
 
 from django.urls import reverse
 from rest_framework import status
-from task.models import TaskState
-from task.serializers import TaskSerializer
-from task.services.exceptions import ConflictTaskStateAtCreationException, \
+from tasks.models import TaskState
+from tasks.serializers import TaskSerializer
+from tasks.services.exceptions import ConflictTaskStateAtCreationException, \
     ConflictActiveTaskSchedulesMissingException, ConflictActiveTaskSchedulesException, \
     ConflictTaskStateException, \
     ConflictDeletedTaskException
-from task.services.task_service import TaskService
+from tasks.services.task_service import TaskService
 
 
 @pytest.mark.django_db

@@ -1,6 +1,6 @@
 from rest_framework.exceptions import APIException
 from rest_framework import status
-from task.models import TaskState
+from tasks.models import TaskState
 
 
 class BaseServiceException(APIException):

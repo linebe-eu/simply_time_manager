@@ -3,8 +3,8 @@ import pytest
 import factory
 from pytest_factoryboy import register
 
-from task.models import Task, Subject, Schedule
-from task.services.task_service import TaskService
+from tasks.models import Task, Subject, Schedule
+from tasks.services.task_service import TaskService
 
 
 def setup_test_environment():

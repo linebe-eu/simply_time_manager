@@ -1,5 +1,5 @@
 from rest_framework.serializers import ModelSerializer
-from task.models import *
+from tasks.models import *
 
 
 class TaskSerializer(ModelSerializer):

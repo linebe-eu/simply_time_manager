@@ -4,9 +4,9 @@ from dataclasses import dataclass
 
 from sortedcontainers import SortedList
 from django.conf import settings
-from task.models import TaskState, Schedule, Task
-from task.services.common import Singleton
-from task.services.exceptions import ConflictActiveTaskSchedulesException, \
+from tasks.models import TaskState, Schedule, Task
+from tasks.services.common import Singleton
+from tasks.services.exceptions import ConflictActiveTaskSchedulesException, \
     ConflictActiveTaskSchedulesMissingException, LogicError
 
 logging.basicConfig(level=logging.INFO)
