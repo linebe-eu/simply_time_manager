@@ -42,7 +42,7 @@ class Task(models.Model):
     time_update = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f"{self.title} id:{self.pk} [{self.state}] "
+        return f"{self.title} id:{self.pk} [{self.state}]"
 
 
 class Schedule(models.Model):
