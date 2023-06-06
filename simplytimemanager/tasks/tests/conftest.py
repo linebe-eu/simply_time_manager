@@ -3,7 +3,7 @@ import pytest
 import factory
 from pytest_factoryboy import register
 
-from tasks.models import Task, Subject, Schedule
+from tasks.models import Task, Subject, Schedule, TaskState
 from tasks.services.task_service import TaskService
 
 
@@ -23,6 +23,19 @@ def clear_context():
     TaskService().remove_all_tasks(force=True)
 
 
+class TaskFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = Task
+
+    title = factory.Sequence(lambda n: f'Task {n}')
+    description = factory.Sequence(lambda n: f'Task description{n}')
+
+    def __init__(self, **kwargs):
+        if kwargs.get("state"):
+            kwargs["state"] = TaskState.PLANNED
+        super().__init__(**kwargs)
+
+
 class SubjectFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = Subject
@@ -38,5 +51,6 @@ class ScheduleFactory(factory.django.DjangoModelFactory):
     end_time = datetime.time(12, 00)
 
 
+register(TaskFactory)
 register(SubjectFactory)
 register(ScheduleFactory)
