@@ -43,11 +43,6 @@ class ConflictTaskStateException(ConflictException):
         super().__init__(detail=detail)
 
 
-class ConflictTaskStateAtCreationException(ConflictException):
-    default_detail = f"State of the task at her creation should only be {TaskState.get_state_at_creation()}"
-    default_code = "conflict task state at creation"
-
-
 class ConflictActiveTaskSchedulesMissingException(ConflictException):
     default_detail = f"To change the state in {TaskState.ACTIVE}, " \
                      f"the task must have at least one schedule."

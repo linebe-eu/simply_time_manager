@@ -50,8 +50,8 @@ class TaskService(metaclass=Singleton):
             logging.info(f"{TaskService.__name__} started")
 
     def create_task(self, serializer: TaskSerializer):
-        creation_state = serializer.validated_data.get("state")
-        self._check_state_at_creation(creation_state)
+        if serializer.validated_data.get("state"):
+            serializer.validated_data["state"] = Task.state.default
         serializer.save()
 
         if verbose:
@@ -179,15 +179,3 @@ class TaskService(metaclass=Singleton):
             # impossible state changes
             case _:
                 raise ConflictTaskStateException(instance.state)
-
-    def _check_state_at_creation(self, state: TaskState | None = None) -> None:
-        """
-        Checks the client-specified state of the task when it is created.\n
-        Throws an exception ConflictTaskStateAtCreationException if an invalid state is specified.
-        When an exception is triggered, the client is given a response describing
-        the problem and its solution.
-        """
-        if state is None:
-            return
-        if state != TaskState.PLANNED:
-            raise ConflictTaskStateAtCreationException()
