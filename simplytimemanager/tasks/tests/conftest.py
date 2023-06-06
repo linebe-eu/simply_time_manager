@@ -23,14 +23,6 @@ def clear_context():
     TaskService().remove_all_tasks(force=True)
 
 
-class TaskFactory(factory.django.DjangoModelFactory):
-    class Meta:
-        model = Task
-
-    title = factory.Sequence(lambda n: f'Task {n}')
-    description = factory.Sequence(lambda n: f'Task description{n}')
-
-
 class SubjectFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = Subject
@@ -46,6 +38,5 @@ class ScheduleFactory(factory.django.DjangoModelFactory):
     end_time = datetime.time(12, 00)
 
 
-register(TaskFactory)
 register(SubjectFactory)
 register(ScheduleFactory)
