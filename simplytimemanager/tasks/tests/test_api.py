@@ -262,7 +262,7 @@ class TestsChangingTaskState:
 
     @pytest.fixture(autouse=True)
     def set_class_attributes(self, api_client, request_method, request_data, task_factory,
-                             schedule_factory):
+                             schedule_factory, clear_context):
         self.request_data = request_data
         if request_method == "PUT":
             self.client_change_request = lambda path, data: api_client.put(path, data=data)
@@ -270,9 +270,6 @@ class TestsChangingTaskState:
             self.client_change_request = lambda path, data: api_client.patch(path, data=data)
         self.task_factory = task_factory
         self.schedule_factory = schedule_factory
-
-    def teardown_method(self, method):
-        TaskService().remove_all_tasks(force=True)
 
     @pytest.mark.parametrize('my_schedules,other_schedules,expected_conflict', [
         pytest.param(
