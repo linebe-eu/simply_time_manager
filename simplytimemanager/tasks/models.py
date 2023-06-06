@@ -35,7 +35,7 @@ class Task(models.Model):
     title = models.CharField(max_length=64)
     subject = models.ForeignKey(Subject, on_delete=models.PROTECT, null=True, related_name="tasks",
                                 to_field="title")
-    description = models.TextField(blank=True)
+    description = models.TextField(blank=True, default='')
     state = models.CharField(choices=TaskState.choices, default=TaskState.get_state_at_creation(),
                              max_length=8)
     time_create = models.DateTimeField(auto_now_add=True)
