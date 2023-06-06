@@ -45,17 +45,26 @@ class TaskService(metaclass=Singleton):
     """
 
     def __init__(self):
+        self._last_task_serializer: TaskSerializer | None = None
         self.schedules_service = ScheduleService()
         if verbose:
             logging.info(f"{TaskService.__name__} started")
 
-    def create_task(self, serializer: TaskSerializer):
-        if serializer.validated_data.get("state"):
-            serializer.validated_data["state"] = Task.state.default
-        serializer.save()
+    @property
+    def last_task_serializer(self):
+        return self._last_task_serializer
+
+    def create_task(self, **kwargs):
+        self._last_task_serializer = TaskSerializer(data=kwargs)
+        self._last_task_serializer.is_valid(raise_exception=True)
+        if self._last_task_serializer.validated_data.get("state"):
+            self._last_task_serializer.validated_data["state"] = Task.state.default
+        self._last_task_serializer.save()
 
         if verbose:
-            logging.info(f"{TaskService.__name__} created task:\n{serializer.instance}")
+            logging.info(
+                f"{TaskService.__name__} created task:\n{self._last_task_serializer.instance}")
+        return self._last_task_serializer.instance
 
     def remove_task(self, instance: Task, force=False):
         if not force and not (
@@ -67,13 +76,17 @@ class TaskService(metaclass=Singleton):
         if verbose:
             logging.info(f"{TaskService.__name__} removed task:\n{instance}")
 
-    def update_task(self, serializer: TaskSerializer, request_method: str):
-        instance = serializer.instance
-        alternative_state = instance.state if request_method == "PATCH" else Task.state.field.default
-        new_state = serializer.validated_data.get("state", alternative_state)
-        self._check_and_update_state(instance, new_state, serializer)
+    def update_task(self, instance: Task, partial: bool = True, **kwargs):
+
+        self._last_task_serializer = TaskSerializer(instance, data=kwargs, partial=partial)
+        self._last_task_serializer.is_valid(raise_exception=True)
+
+        alternative_state = instance.state if partial else Task.state.field.default
+        new_state = self._last_task_serializer.validated_data.get("state", alternative_state)
+        self._check_and_update_state(instance, new_state, self._last_task_serializer)
         if verbose:
             logging.info(f"{TaskService.__name__} updated task:\n{instance}")
+        return instance
 
     def set_state_active(self, instance: Task, serializer: TaskSerializer | None = None):
         if not (instance.state in [TaskState.PLANNED, TaskState.PAUSED]):
