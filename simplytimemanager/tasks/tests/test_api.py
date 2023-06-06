@@ -5,8 +5,8 @@ from django.urls import reverse
 from rest_framework import status
 from tasks.models import TaskState
 from tasks.serializers import TaskSerializer
-from tasks.services.exceptions import ConflictTaskStateAtCreationException, \
-    ConflictActiveTaskSchedulesMissingException, ConflictActiveTaskSchedulesException, \
+from tasks.services.exceptions import ConflictActiveTaskSchedulesMissingException, \
+    ConflictActiveTaskSchedulesException, \
     ConflictTaskStateException, \
     ConflictDeletedTaskException
 from tasks.services.task_service import TaskService
@@ -18,27 +18,25 @@ from tasks.services.task_service import TaskService
         {"title": "Task",
          "subject": "Subject",  # in runtime replace real subject
          "description": "Task description",
-         "state": TaskState.get_state_at_creation(),
          },
         id="task data",
     ),
     pytest.param(
         {"title": "Task",
-         "subject": "Subject",  # in runtime replace real subject
          "description": "Created task description",
          },
-        id="task data wo state",
-    ),
-    pytest.param(
-        {"title": "Task",
-         "description": "Created task description",
-         },
-        id="task dataa wo state and subject",
+        id="task dataa wo subject",
     ),
     pytest.param(
         {"title": "Created task",
          },
         id="task data only title",
+    ),
+    pytest.param(
+        {"title": "Created task",
+         "state": TaskState.ACTIVE,
+         },
+        id="state in task data doesn't matter",
     ),
 ])
 def test_get_task(task_data, api_client, subject_factory, task_factory):
@@ -61,17 +59,14 @@ def test_get_task(task_data, api_client, subject_factory, task_factory):
             {"title": "Task1",
              "subject": "Subject1",  # in runtime replace real subject
              "description": "Task1 description",
-             "state": TaskState.get_state_at_creation(),
              },
             {"title": "Task2",
              "subject": "Subject2",  # in runtime replace real subject
              "description": "Task2 description",
-             "state": TaskState.get_state_at_creation(),
              },
             {"title": "Task3",
              "subject": "Subject3",  # in runtime replace real subject
              "description": "Task3 description",
-             "state": TaskState.get_state_at_creation(),
              },
         ],
 
@@ -103,67 +98,22 @@ def test_get_tasks(tasks_data, api_client, subject_factory, task_factory):
         {"title": "Created task",
          "subject": "Subject",  # in runtime replace real subject
          "description": "Created task description",
-         "state": TaskState.get_state_at_creation(),
          },
         None,
         id="request_data",
     ),
     pytest.param(
         {"title": "Created task",
-         "subject": "Subject",  # in runtime replace real subject
          "description": "Created task description",
          },
         None,
-        id="request_data wo state",
-    ),
-    pytest.param(
-        {"title": "Created task",
-         "description": "Created task description",
-         },
-        None,
-        id="request_data wo state and subject",
+        id="request_data wo subject",
     ),
     pytest.param(
         {"title": "Created task",
          },
         None,
         id="request_data only title",
-    ),
-    pytest.param(
-        {"title": "No created task",
-         "subject": "Subject",  # in runtime replace real subject
-         "description": "No created task description",
-         "state": TaskState.ACTIVE,
-         },
-        ConflictTaskStateAtCreationException(),
-        id=f"NEGATIVE request_data with bad state {TaskState.ACTIVE}",
-    ),
-    pytest.param(
-        {"title": "No created task",
-         "subject": "Subject",  # in runtime replace real subject
-         "description": "No created task description",
-         "state": TaskState.PAUSED,
-         },
-        ConflictTaskStateAtCreationException(),
-        id=f"NEGATIVE request_data with bad state {TaskState.PAUSED}",
-    ),
-    pytest.param(
-        {"title": "No created task",
-         "subject": "Subject",  # in runtime replace real subject
-         "description": "No created task description",
-         "state": TaskState.FINISHED,
-         },
-        ConflictTaskStateAtCreationException(),
-        id=f"NEGATIVE request_data with bad state {TaskState.FINISHED}",
-    ),
-    pytest.param(
-        {"title": "No created task",
-         "subject": "Subject",  # in runtime replace real subject
-         "description": "No created task description",
-         "state": TaskState.ARCHIVED,
-         },
-        ConflictTaskStateAtCreationException(),
-        id=f"NEGATIVE request_data with bad state {TaskState.ARCHIVED}",
     ),
 ])
 def test_create_task(request_data, api_client, subject_factory, expected_conflict, clear_context):
